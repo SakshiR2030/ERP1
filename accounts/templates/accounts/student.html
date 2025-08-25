@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-5">
+
+  <!-- -------------------------------
+       Student Details Section
+       ------------------------------- -->
+  <div class="card shadow p-4 mb-5">
+    <h2 class="mb-3">Student Details</h2>
+
+    <form method="POST" action="">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+  </div>
+
+  <!-- -------------------------------
+       Concession Application Section
+       ------------------------------- -->
+  <div class="card shadow p-4">
+    <h3 class="mb-3">Apply for Railway Concession</h3>
+
+    <form method="POST" action="{% url 'concession' %}">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label for="classType" class="form-label">Class</label>
+        <select id="classType" name="class_type" class="form-select" required>
+          <option value="first">First Class</option>
+          <option value="second">Second Class</option>
+          <option value="ac">AC Class</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="period" class="form-label">Period</label>
+        <select id="period" name="period" class="form-select" required>
+          <option value="monthly">Monthly</option>
+          <option value="quarterly">Quarterly</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="line" class="form-label">Railway Line</label>
+        <select id="line" name="line" class="form-select" onchange="updateStations()" required>
+          <option value="">Select Line</option>
+          <option value="central">Central</option>
+          <option value="western">Western</option>
+          <option value="harbour">Harbour</option>
+          <option value="trans-harbour">Trans-Harbour</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="fromStation" class="form-label">From Station</label>
+        <select id="fromStation" name="from_station" class="form-select" required>
+          <option value="">Select Station</option>
+          <!-- JS will populate this -->
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="toStation" class="form-label">To Station</label>
+        <input type="text" id="toStation" name="to_station" class="form-control" value="Wadala" readonly>
+      </div>
+
+      <button type="submit" class="btn btn-success">Submit Application</button>
+    </form>
+
+    {% if success %}
+      <div class="alert alert-success mt-3 py-2" role="alert">
+        {{ success }}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Optional JS -->
+  <script>
+    function updateStations() {
+      // Example: Update From Stations based on selected line
+      const line = document.getElementById("line").value;
+      const fromStation = document.getElementById("fromStation");
+      fromStation.innerHTML = "<option value=''>Select Station</option>";
+
+      let stations = [];
+      if(line === "central") stations = ["Dadar", "Byculla", "Masjid"];
+      else if(line === "western") stations = ["Churchgate", "Dadar", "Borivali"];
+      else if(line === "harbour") stations = ["CSTM", "Sandhurst", "Kurla"];
+      else if(line === "trans-harbour") stations = ["Vashi", "Belapur", "Airoli"];
+      else if(line === "other") stations = ["Other"];
+
+      stations.forEach(station => {
+        const option = document.createElement("option");
+        option.value = station.toLowerCase();
+        option.text = station;
+        fromStation.appendChild(option);
+      });
+    }
+  </script>
+
+</body>
+</html>
