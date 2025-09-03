@@ -16,6 +16,7 @@
     <form method="POST" action="">
       {% csrf_token %}
       {{ form.as_p }}
+      <input type="hidden" name="save_student" value="1">
       <button type="submit" class="btn btn-primary">Save</button>
     </form>
   </div>
@@ -26,8 +27,18 @@
   <div class="card shadow p-4">
     <h3 class="mb-3">Apply for Railway Concession</h3>
 
-    <form method="POST" action="{% url 'concession' %}">
+    <!-- ✅ Display messages -->
+    {% if messages %}
+      <div>
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="POST" action="">
       {% csrf_token %}
+      <input type="hidden" name="apply_concession" value="1">
 
       <div class="mb-3">
         <label for="classType" class="form-label">Class</label>
@@ -62,7 +73,6 @@
         <label for="fromStation" class="form-label">From Station</label>
         <select id="fromStation" name="from_station" class="form-select" required>
           <option value="">Select Station</option>
-          <!-- JS will populate this -->
         </select>
       </div>
 
@@ -73,36 +83,47 @@
 
       <button type="submit" class="btn btn-success">Submit Application</button>
     </form>
-
-    {% if success %}
-      <div class="alert alert-success mt-3 py-2" role="alert">
-        {{ success }}
-      </div>
-    {% endif %}
   </div>
 
-  <!-- Optional JS -->
   <script>
-    function updateStations() {
-      // Example: Update From Stations based on selected line
-      const line = document.getElementById("line").value;
-      const fromStation = document.getElementById("fromStation");
-      fromStation.innerHTML = "<option value=''>Select Station</option>";
+  // --- station list defined globally ---
+  const stationData = {
+    central: ["CSMT","Masjid","Sandhurst Road","Byculla","Chinchpokli","Currey Road","Parel",
+      "Dadar","Matunga","Sion","Kurla","Vidyavihar","Ghatkopar","Vikhroli","Kanjur Marg",
+      "Bhandup","Nahur","Mulund","Thane","Kalva","Mumbra","Diva Jn","Kopar",
+      "Dombivli","Thakurli","Kalyan","Vithalwadi","Ulhas Nagar","Ambarnath","Badlapur",
+      "Vangani","Shelu","Neral","Bhivpuri Road","Karjat","Palasdhari","Kelavli","Dolavli",
+      "Lowjee","Khopoli","Shahad","Ambivli","Titwala","Khadavli","Vasind","Asangaon",
+      "Atgaon","Thansit","Khardi","Umbermali","Kasara"],
+    western: ["Churchgate","Marine Lines","Charni Road","Grant Road","Mumbai Central","Mahalakshmi",
+      "Lower Parel","Prabhadevi","Dadar","Matunga Road","Mahim Jn","Bandra","Khar Road",
+      "Santa Cruz","Vile Parle","Andheri","Jogeshwari","Ram Mandir","Goregaon","Malad",
+      "Kandivali","Borivali","Dahisar","Mira Road","Bhayandar","Naigaon","Vasai",
+      "Nala Sopara","Virar","Vaitarana","Saphale","Kelve Road","Palghar","Umroli","Boisar",
+      "Vangaon","Dahanu Road"],
+    harbour: ["CSMT","Masjid","Sandhurst Road","Dockyard Road","Reay Road","Cotton Green","Sewri",
+      "Wadala","Kings Circle","Mahim Jn","Bandra","Khar Road","Santa Cruz","Vile Parle",
+      "Andheri","Jogeshwari","Ram Mandir","Goregaon","GTB Nagar","Chunabhatti","Kurla",
+      "Tilaknagar","Chembur","Govandi","Mankhurd","Vashi","Sanpada","Juinagar","Nerul",
+      "Seawoods-Darave","Belapur CBD","Kharghar","Manasarovar","Khandeshwar","Panvel"],
+    "trans-harbour": ["Thane","Digha Gaon","Airoli","Rabale","Ghansoli","Koparkhairane","Turbhe","Sanpada",
+      "Vashi","Juinagar","Nerul","Seawoods-Darave","Belapur CBD","Kharghar","Manasarovar",
+      "Khandeshwar","Panvel"],
+    other: []
+  };
 
-      let stations = [];
-      if(line === "central") stations = ["Dadar", "Byculla", "Masjid"];
-      else if(line === "western") stations = ["Churchgate", "Dadar", "Borivali"];
-      else if(line === "harbour") stations = ["CSTM", "Sandhurst", "Kurla"];
-      else if(line === "trans-harbour") stations = ["Vashi", "Belapur", "Airoli"];
-      else if(line === "other") stations = ["Other"];
-
-      stations.forEach(station => {
-        const option = document.createElement("option");
-        option.value = station.toLowerCase();
-        option.text = station;
-        fromStation.appendChild(option);
-      });
-    }
+  function updateStations() {
+    const line = document.getElementById("line").value;
+    const fromStation = document.getElementById("fromStation");
+    fromStation.innerHTML = "<option value=''>Select Station</option>";
+    const stations = stationData[line] || [];
+    stations.forEach(station => {
+      const option = document.createElement("option");
+      option.value = station;
+      option.text = station;
+      fromStation.appendChild(option);
+    });
+  }
   </script>
 
 </body>

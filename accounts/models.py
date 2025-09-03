@@ -8,7 +8,7 @@ class CustomUser(AbstractUser):
     full_name = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
-        return self.username
+        return self.full_name if self.full_name else self.username
 
 
 # -----------------------------
@@ -20,7 +20,7 @@ class Student(models.Model):
     branch = models.CharField(max_length=50, blank=True, null=True)
     year = models.IntegerField(blank=True, null=True)
    # age = models.IntegerField(blank=True, null=True)  # optional field
-
+    station = models.CharField(max_length=150, blank=True)
     def __str__(self):
         return self.full_name
 

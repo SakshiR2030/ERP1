@@ -33,12 +33,18 @@ class ConcessionApplicationForm(forms.ModelForm):
     """
     class Meta:
         model = ConcessionApplication
-        # We don't need 'student' here, as we'll link it in the view.
-        # 'to_station' is fixed, so we don't need it in the form either.
-        fields = ['class_type', 'period', 'line', 'from_station']
+        fields = ['class_type', 'period', 'line', 'from_station', 'to_station']
         widgets = {
             'class_type': forms.Select(attrs={'class': 'form-control'}),
             'period': forms.Select(attrs={'class': 'form-control'}),
             'line': forms.Select(attrs={'class': 'form-control', 'onchange': 'updateStations()'}),
-            'from_station': forms.TextInput(attrs={'class': 'form-control'}),
+            'from_station': forms.Select(attrs={'class': 'form-control'}),
+            'to_station': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Set initial empty choices for from_station (will be populated by JavaScript)
+        self.fields['from_station'].choices = [('', 'Select Station')]
+        # Set default value for to_station
+        self.fields['to_station'].initial = 'Wadala'
